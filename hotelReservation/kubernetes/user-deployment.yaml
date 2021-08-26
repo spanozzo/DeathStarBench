@@ -25,7 +25,7 @@ spec:
       labels:
         io.kompose.service: user
     spec:
-      nodeName: r08
+      #nodeName: r08
       containers:
         - command:
             - user
@@ -35,6 +35,6 @@ spec:
             - containerPort: 8086
           resources:
             limits:
-              cpu: 1000m
+              cpu: 100m
       restartPolicy: Always
 status: {}

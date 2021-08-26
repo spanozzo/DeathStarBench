@@ -25,7 +25,7 @@ spec:
       labels:
         io.kompose.service: search
     spec:
-      nodeName: r07
+      #nodeName: r07
       containers:
         - command:
             - search
@@ -35,6 +35,6 @@ spec:
             - containerPort: 8082
           resources:
             limits:
-              cpu: 1000m
+              cpu: 100m
       restartPolicy: Always
 status: {}

@@ -25,7 +25,7 @@ spec:
       labels:
         io.kompose.service: memcached-reserve
     spec:
-      nodeName: r10
+      #nodeName: r10
       containers:
         - env:
             - name: MEMCACHED_CACHE_SIZE
@@ -38,6 +38,6 @@ spec:
             - containerPort: 11211
           resources:
             limits:
-              cpu: 1000m
+              cpu: 100m
       restartPolicy: Always
 status: {}

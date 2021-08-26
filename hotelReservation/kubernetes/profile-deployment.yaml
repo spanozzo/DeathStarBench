@@ -25,7 +25,7 @@ spec:
       labels:
         io.kompose.service: profile
     spec:
-      nodeName: r07
+      #nodeName: r07
       containers:
         - command:
             - profile
@@ -35,6 +35,6 @@ spec:
             - containerPort: 8081
           resources:
             limits:
-              cpu: 1000m
+              cpu: 100m
       restartPolicy: Always
 status: {}

@@ -25,7 +25,7 @@ spec:
       labels:
         io.kompose.service: recommendation
     spec:
-      nodeName: r08
+      #nodeName: r08
       containers:
         - command:
             - recommendation
@@ -35,6 +35,6 @@ spec:
             - containerPort: 8085
           resources:
             limits:
-              cpu: 1000m
+              cpu: 100m
       restartPolicy: Always
 status: {}
