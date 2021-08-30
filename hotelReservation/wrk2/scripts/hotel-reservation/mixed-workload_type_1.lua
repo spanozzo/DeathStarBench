@@ -34,7 +34,7 @@ local function search_hotel()
   local lon = -122.095 + (math.random(0, 325) - 157.0)/1000.0
 
   local method = "GET"
-  local path = "http://localhost:5000/hotels?inDate=" .. in_date_str .. 
+  local path = "http://192.168.99.100:31679/hotels?inDate=" .. in_date_str .. 
     "&outDate=" .. out_date_str .. "&lat=" .. tostring(lat) .. "&lon=" .. tostring(lon)
 
   local headers = {}
@@ -57,7 +57,7 @@ local function recommend()
   local lon = -122.095 + (math.random(0, 325) - 157.0)/1000.0
 
   local method = "GET"
-  local path = "http://localhost:5000/recommendations?require=" .. req_param .. 
+  local path = "http://192.168.99.100:31679/recommendations?require=" .. req_param .. 
     "&lat=" .. tostring(lat) .. "&lon=" .. tostring(lon)
   local headers = {}
   -- headers["Content-Type"] = "application/x-www-form-urlencoded"
@@ -89,7 +89,7 @@ local function reserve()
   local num_room = "1"
 
   local method = "POST"
-  local path = "http://localhost:5000/reservation?inDate=" .. in_date_str .. 
+  local path = "http://192.168.99.100:31679/reservation?inDate=" .. in_date_str .. 
     "&outDate=" .. out_date_str .. "&lat=" .. tostring(lat) .. "&lon=" .. tostring(lon) ..
     "&hotelId=" .. hotel_id .. "&customerName=" .. cust_name .. "&username=" .. user_id ..
     "&password=" .. password .. "&number=" .. num_room
@@ -101,7 +101,7 @@ end
 local function user_login()
   local user_name, password = get_user()
   local method = "GET"
-  local path = "http://localhost:5000/user?username=" .. user_name .. "&password=" .. password
+  local path = "http://192.168.99.100:31679/user?username=" .. user_name .. "&password=" .. password
   local headers = {}
   -- headers["Content-Type"] = "application/x-www-form-urlencoded"
   return wrk.format(method, path, headers, nil)
