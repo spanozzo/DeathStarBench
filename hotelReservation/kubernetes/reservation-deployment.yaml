@@ -29,7 +29,7 @@ spec:
       containers:
         - command:
             - reservation
-          image: salehsedghpour/hotel_reserv_reserve_single_node
+          image: panuc1/hotel_reserv_reserve_single_node
           name: hotel-reserv-reservation
           ports:
             - containerPort: 8087

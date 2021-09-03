@@ -29,7 +29,7 @@ spec:
       containers:
         - command:
             - search
-          image: salehsedghpour/hotel_reserv_search_single_node
+          image: panuc1/hotel_reserv_search_single_node
           name: hotel-reserv-search
           ports:
             - containerPort: 8082

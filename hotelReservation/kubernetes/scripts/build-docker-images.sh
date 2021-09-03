@@ -5,7 +5,7 @@ cd $(dirname $0)/..
 
 EXEC=docker
 
-USER="salehsedghpour"
+USER="panuc1"
 
 TAG="latest"
 

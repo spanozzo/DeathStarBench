@@ -29,7 +29,7 @@ spec:
       containers:
         - command:
             - rate
-          image: salehsedghpour/hotel_reserv_rate_single_node
+          image: panuc1/hotel_reserv_rate_single_node
           name: hotel-reserv-rate
           ports:
             - containerPort: 8084

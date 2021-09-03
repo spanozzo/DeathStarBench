@@ -10,7 +10,7 @@
 ### Before you start
 
 - Ensure that the necessary local images have been made.
-  - `<path-of-repo>/hotelReservation/kubernetes/scripts/build-docker-images.sh`, currently all images exists in the `salehsedghpour/<image-name>`.
+  - `<path-of-repo>/hotelReservation/kubernetes/scripts/build-docker-images.sh`, currently all images exists in the `panuc1/<image-name>`.
   if you intend to change it, remember to change the username in the build script and also all deployments as well.
 ### Deploy services
 
