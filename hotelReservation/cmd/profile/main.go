@@ -13,8 +13,9 @@ import (
 	"github.com/harlow/go-micro-services/services/profile"
 	"github.com/harlow/go-micro-services/tracing"
 
-	"github.com/bradfitz/gomemcache/memcache"
 	"time"
+
+	"github.com/bradfitz/gomemcache/memcache"
 )
 
 func main() {
@@ -39,13 +40,13 @@ func main() {
 	memc_client.MaxIdleConns = 512
 
 	serv_port, _ := strconv.Atoi(result["ProfilePort"])
-	serv_ip   := result["ProfileIP"]
+	serv_ip := result["ProfileIP"]
 
 	fmt.Printf("profile ip = %s, port = %d\n", serv_ip, serv_port)
 
 	var (
 		// port       = flag.Int("port", 8081, "The server port")
-		jaegeraddr = flag.String("jaegeraddr", result["consulAddress"], "Jaeger server addr")
+		jaegeraddr = flag.String("jaegeraddr", result["jaegerAddress"], "Jaeger server addr")
 		consuladdr = flag.String("consuladdr", result["consulAddress"], "Consul address")
 	)
 	flag.Parse()
@@ -61,13 +62,13 @@ func main() {
 	}
 
 	srv := profile.Server{
-		Tracer:   tracer,
+		Tracer: tracer,
 		// Port:     *port,
-		Registry: registry,
-		Port:     serv_port,
-		IpAddr:	  serv_ip,
+		Registry:     registry,
+		Port:         serv_port,
+		IpAddr:       serv_ip,
 		MongoSession: mongo_session,
-		MemcClient: memc_client,
+		MemcClient:   memc_client,
 	}
 	log.Fatal(srv.Run())
 }

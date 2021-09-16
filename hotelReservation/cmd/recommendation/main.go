@@ -8,10 +8,11 @@ import (
 	"log"
 	"os"
 
+	"strconv"
+
 	"github.com/harlow/go-micro-services/registry"
 	"github.com/harlow/go-micro-services/services/recommendation"
 	"github.com/harlow/go-micro-services/tracing"
-	"strconv"
 	// "github.com/bradfitz/gomemcache/memcache"
 )
 
@@ -32,13 +33,13 @@ func main() {
 	defer mongo_session.Close()
 
 	serv_port, _ := strconv.Atoi(result["RecommendPort"])
-	serv_ip   := result["RecommendIP"]
+	serv_ip := result["RecommendIP"]
 
 	fmt.Printf("recommendation ip = %s, port = %d\n", serv_ip, serv_port)
 
 	var (
 		// port       = flag.Int("port", 8085, "The server port")
-		jaegeraddr = flag.String("jaegeraddr", result["consulAddress"], "Jaeger server addr")
+		jaegeraddr = flag.String("jaegeraddr", result["jaegerAddress"], "Jaeger server addr")
 		consuladdr = flag.String("consuladdr", result["consulAddress"], "Consul address")
 	)
 	flag.Parse()
@@ -54,11 +55,11 @@ func main() {
 	}
 
 	srv := &recommendation.Server{
-		Tracer:   tracer,
+		Tracer: tracer,
 		// Port:     *port,
-		Registry: registry,
-		Port:     serv_port,
-		IpAddr:	  serv_ip,
+		Registry:     registry,
+		Port:         serv_port,
+		IpAddr:       serv_ip,
 		MongoSession: mongo_session,
 	}
 	log.Fatal(srv.Run())

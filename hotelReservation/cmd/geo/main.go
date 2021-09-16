@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	
+
 	jsonFile, err := os.Open("config.json")
 	if err != nil {
 		fmt.Println(err)
@@ -31,13 +31,13 @@ func main() {
 	mongo_session := initializeDatabase(result["GeoMongoAddress"])
 	defer mongo_session.Close()
 	serv_port, _ := strconv.Atoi(result["GeoPort"])
-	serv_ip   := result["GeoIP"]
+	serv_ip := result["GeoIP"]
 
 	fmt.Printf("geo ip = %s, port = %d\n", serv_ip, serv_port)
-	
+
 	var (
 		// port       = flag.Int("port", 8083, "Server port")
-		jaegeraddr = flag.String("jaegeraddr", result["consulAddress"], "Jaeger address")
+		jaegeraddr = flag.String("jaegeraddr", result["jaegerAddress"], "Jaeger address")
 		consuladdr = flag.String("consuladdr", result["consulAddress"], "Consul address")
 	)
 	flag.Parse()
@@ -54,10 +54,10 @@ func main() {
 
 	srv := &geo.Server{
 		// Port:     *port,
-		Port:     serv_port,
-		IpAddr:	  serv_ip,
-		Tracer:   tracer,
-		Registry: registry,
+		Port:         serv_port,
+		IpAddr:       serv_ip,
+		Tracer:       tracer,
+		Registry:     registry,
 		MongoSession: mongo_session,
 	}
 	log.Fatal(srv.Run())
