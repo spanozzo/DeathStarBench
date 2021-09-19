@@ -873,6 +873,11 @@ static void print_hdr_latency(struct hdr_histogram* histogram, const char* descr
     }
     printf("\n%s\n", "  Detailed Percentile spectrum:");
     hdr_percentiles_print(histogram, stdout, 5, 1000.0, CLASSIC);
+    // Print to file
+    FILE *fp;
+    fp = fopen("result.txt","w+");
+    hdr_percentiles_print(histogram, fp, 5, 1000.0, CLASSIC);
+    fclose(fp);
 }
 
 static void print_stats_latency(stats *stats) {

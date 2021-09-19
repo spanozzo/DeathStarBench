@@ -1,0 +1,6 @@
+time_started,min_latency,max_latency,mean_latency,stdev,50th,90th,99th,99.999th,duration,requests,bytes,connect_errors,read_errors,write_errors,status_errors,timeouts
+2021-09-19T13:59:44Z,4710400.000000,20021248.000000,11932501.776623,3612022.347661,11935743.000000,16736255.000000,18825215.000000,20037631.000000,30021666,1159,490826,0,0,0,0
+time_started,min_latency,max_latency,mean_latency,stdev,50th,90th,99th,99.999th,duration,requests,bytes,connect_errors,read_errors,write_errors,status_errors,timeouts
+2021-09-19T15:01:29Z,4841472.000000,19038208.000000,11874089.754781,3247509.745461,11739135.000000,16343039.000000,18153471.000000,19054591.000000,30022107,1255,546884,0,0,0,0
+time_started,min_latency,max_latency,mean_latency,stdev,50th,90th,99th,99.999th,duration,requests,bytes,connect_errors,read_errors,write_errors,status_errors,timeouts
+2021-09-19T15:03:20Z,3538944.000000,10534912.000000,7117013.026379,1299911.288432,7143423.000000,8749055.000000,9945087.000000,10543103.000000,30007964,2099,895337,0,0,0,0

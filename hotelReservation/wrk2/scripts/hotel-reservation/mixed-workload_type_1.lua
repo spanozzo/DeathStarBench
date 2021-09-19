@@ -34,7 +34,7 @@ local function search_hotel()
   local lon = -122.095 + (math.random(0, 325) - 157.0)/1000.0
 
   local method = "GET"
-  local path = "http://localhost:5000/hotels?inDate=" .. in_date_str .. 
+  local path = "http://192.168.49.2:32469/hotels?inDate=" .. in_date_str .. 
     "&outDate=" .. out_date_str .. "&lat=" .. tostring(lat) .. "&lon=" .. tostring(lon)
 
   local headers = {}
@@ -57,7 +57,7 @@ local function recommend()
   local lon = -122.095 + (math.random(0, 325) - 157.0)/1000.0
 
   local method = "GET"
-  local path = "http://localhost:5000/recommendations?require=" .. req_param .. 
+  local path = "http://192.168.49.2:32469/recommendations?require=" .. req_param .. 
     "&lat=" .. tostring(lat) .. "&lon=" .. tostring(lon)
   local headers = {}
   -- headers["Content-Type"] = "application/x-www-form-urlencoded"
@@ -89,7 +89,7 @@ local function reserve()
   local num_room = "1"
 
   local method = "POST"
-  local path = "http://localhost:5000/reservation?inDate=" .. in_date_str .. 
+  local path = "http://192.168.49.2:32469/reservation?inDate=" .. in_date_str .. 
     "&outDate=" .. out_date_str .. "&lat=" .. tostring(lat) .. "&lon=" .. tostring(lon) ..
     "&hotelId=" .. hotel_id .. "&customerName=" .. cust_name .. "&username=" .. user_id ..
     "&password=" .. password .. "&number=" .. num_room
@@ -101,7 +101,7 @@ end
 local function user_login()
   local user_name, password = get_user()
   local method = "GET"
-  local path = "http://localhost:5000/user?username=" .. user_name .. "&password=" .. password
+  local path = "http://192.168.49.2:32469/user?username=" .. user_name .. "&password=" .. password
   local headers = {}
   -- headers["Content-Type"] = "application/x-www-form-urlencoded"
   return wrk.format(method, path, headers, nil)
@@ -124,4 +124,35 @@ request = function()
   else 
     return reserve()
   end
+end
+
+-- TESTI PRINT TO CSV
+done = function(summary, latency, requests)
+  -- open output file
+  f = io.open("result.csv", "a+")
+  f:write("time_started,min_latency,max_latency,mean_latency,stdev,50th,90th,99th,99.999th,duration,requests,bytes,connect_errors,read_errors,write_errors,status_errors,timeouts\n")
+  f:write(string.format("%s,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d\n",
+    os.date("!%Y-%m-%dT%TZ"),
+    latency.min,    -- minimum latency
+    latency.max,    -- max latency
+    latency.mean,   -- mean of latency
+    latency.stdev,  -- standard deviation of latency
+
+    latency:percentile(50),     -- 50percentile latency
+    latency:percentile(90),     -- 90percentile latency
+    latency:percentile(99),     -- 99percentile latency
+    latency:percentile(99.999), -- 99.999percentile latency
+      
+    summary["duration"],          -- duration of the benchmark
+    summary["requests"],          -- total requests during the benchmark
+    summary["bytes"],             -- total received bytes during the benchmark
+     
+    summary["errors"]["connect"], -- total socket connection errors
+    summary["errors"]["read"],    -- total socket read errors
+    summary["errors"]["write"],   -- total socket write errors
+    summary["errors"]["status"],  -- total socket write errors
+    summary["errors"]["timeout"]  -- total request timeouts
+    ))
+  
+  f:close()
 end
