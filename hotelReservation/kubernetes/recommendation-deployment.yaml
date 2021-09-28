@@ -25,7 +25,8 @@ spec:
       labels:
         io.kompose.service: recommendation
     spec:
-      #nodeName: r08
+      nodeSelector:
+        node: hotelreserv
       containers:
         - command:
             - recommendation
@@ -35,6 +36,6 @@ spec:
             - containerPort: 8085
           resources:
             limits:
-              cpu: 100m
+              cpu: 200m
       restartPolicy: Always
 status: {}

@@ -1,0 +1,19 @@
+alertmanager:
+   enabled: false
+   # alertmanagerSpec:
+   #   nodeSelector:
+   #      node: ak-utils
+prometheusOperator:
+   nodeSelector:
+      node: ak-utils
+prometheus:
+   prometheusSpec:
+      nodeSelector:
+         node: ak-utils
+kube-state-metrics:
+   nodeSelector:
+      node: ak-utils
+grafana:
+   adminPassword: admin
+   nodeSelector:
+      node: ak-utils

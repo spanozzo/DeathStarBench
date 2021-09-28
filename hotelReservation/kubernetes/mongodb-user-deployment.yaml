@@ -26,7 +26,8 @@ spec:
       labels:
         io.kompose.service: mongodb-user
     spec:
-      #nodeName: r13
+      nodeSelector:
+        node: hotelreserv
       containers:
         - image: mongo
           name: hotel-reserv-user-mongo

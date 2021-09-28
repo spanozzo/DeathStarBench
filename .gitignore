@@ -1,3 +1,7 @@
 .vscode
 build
 *.o
+
+hotelReservation/wrk2/result.csv
+
+hotelReservation/wrk2/result.txt

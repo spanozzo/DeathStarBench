@@ -25,7 +25,8 @@ spec:
       labels:
         io.kompose.service: memcached-rate
     spec:
-      #nodeName: r09
+      nodeSelector:
+        node: hotelreserv
       containers:
         - env:
             - name: MEMCACHED_CACHE_SIZE

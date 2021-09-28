@@ -25,7 +25,8 @@ spec:
       labels:
         io.kompose.service: search
     spec:
-      #nodeName: r07
+      nodeSelector:
+        node: hotelreserv
       containers:
         - command:
             - search
@@ -35,6 +36,6 @@ spec:
             - containerPort: 8082
           resources:
             limits:
-              cpu: 100m
+              cpu: 200m
       restartPolicy: Always
 status: {}

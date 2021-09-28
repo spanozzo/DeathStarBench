@@ -26,7 +26,8 @@ spec:
       labels:
         io.kompose.service: mongodb-profile
     spec:
-      #nodeName: r10
+      nodeSelector:
+        node: hotelreserv
       containers:
         - image: mongo
           name: hotel-reserv-profile-mongo
