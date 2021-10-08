@@ -3,18 +3,21 @@ package frontend
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/harlow/go-micro-services/services/recommendation/proto"
-	"github.com/harlow/go-micro-services/services/reservation/proto"
-	"github.com/harlow/go-micro-services/services/user/proto"
 	"net/http"
 	"strconv"
 
+	recommendation "github.com/harlow/go-micro-services/services/recommendation/proto"
+	reservation "github.com/harlow/go-micro-services/services/reservation/proto"
+	user "github.com/harlow/go-micro-services/services/user/proto"
+
 	"github.com/harlow/go-micro-services/dialer"
 	"github.com/harlow/go-micro-services/registry"
-	"github.com/harlow/go-micro-services/services/profile/proto"
-	"github.com/harlow/go-micro-services/services/search/proto"
+	profile "github.com/harlow/go-micro-services/services/profile/proto"
+	search "github.com/harlow/go-micro-services/services/search/proto"
 	"github.com/harlow/go-micro-services/tracing"
 	"github.com/opentracing/opentracing-go"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Server implements frontend service
@@ -24,10 +27,10 @@ type Server struct {
 	recommendationClient recommendation.RecommendationClient
 	userClient           user.UserClient
 	reservationClient    reservation.ReservationClient
-	IpAddr	 string
-	Port     int
-	Tracer   opentracing.Tracer
-	Registry *registry.Client
+	IpAddr               string
+	Port                 int
+	Tracer               opentracing.Tracer
+	Registry             *registry.Client
 }
 
 // Run the server
@@ -64,6 +67,10 @@ func (s *Server) Run() error {
 	mux.Handle("/recommendations", http.HandlerFunc(s.recommendHandler))
 	mux.Handle("/user", http.HandlerFunc(s.userHandler))
 	mux.Handle("/reservation", http.HandlerFunc(s.reservationHandler))
+
+	// mux.Handle("/metrics", promhttp.Handler())
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":5000", nil)
 
 	// fmt.Printf("frontend starts serving\n")
 

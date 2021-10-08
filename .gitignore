@@ -5,3 +5,5 @@ build
 hotelReservation/wrk2/result.csv
 
 hotelReservation/wrk2/result.txt
+
+hotelReservation/kubernetes/scripts/build-docker-images.sh

@@ -1,0 +1,23 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: DeathStarBench
+  region: us-east-2
+  version: "1.21"
+
+nodeGroups:
+  - name: hotelreserv
+    labels:
+      node: hotelreserv
+    instanceName: hotelreserv
+    amiFamily: Ubuntu2004
+    desiredCapacity: 1
+    volumeSize: 30
+    instancesDistribution:
+      instanceTypes: ["m5.xlarge"]
+      onDemandBaseCapacity: 0
+      onDemandPercentageAboveBaseCapacity: 0
+    ssh:
+      allow: true
+      publicKeyName: research
