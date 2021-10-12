@@ -68,9 +68,10 @@ func (s *Server) Run() error {
 	mux.Handle("/user", http.HandlerFunc(s.userHandler))
 	mux.Handle("/reservation", http.HandlerFunc(s.reservationHandler))
 
-	// mux.Handle("/metrics", promhttp.Handler())
-	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":5000", nil)
+	mux.Handle("/metrics", promhttp.Handler())
+	// http.Handle("/metrics", promhttp.Handler())
+	// http.ListenAndServe(":5000", nil)
+	fmt.Printf("/metrics starts serving\n")
 
 	// fmt.Printf("frontend starts serving\n")
 

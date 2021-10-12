@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/harlow/go-micro-services/services/recommendation/proto"
-	"github.com/harlow/go-micro-services/services/reservation/proto"
-	"github.com/harlow/go-micro-services/services/user/proto"
+	recommendation "github.com/harlow/go-micro-services/services/recommendation/proto"
+	reservation "github.com/harlow/go-micro-services/services/reservation/proto"
+	user "github.com/harlow/go-micro-services/services/user/proto"
 
 	"github.com/harlow/go-micro-services/dialer"
 	"github.com/harlow/go-micro-services/registry"
-	"github.com/harlow/go-micro-services/services/profile/proto"
-	"github.com/harlow/go-micro-services/services/search/proto"
+	profile "github.com/harlow/go-micro-services/services/profile/proto"
+	search "github.com/harlow/go-micro-services/services/search/proto"
 	"github.com/harlow/go-micro-services/tracing"
 	"github.com/opentracing/opentracing-go"
 
@@ -70,7 +70,8 @@ func (s *Server) Run() error {
 
 	mux.Handle("/metrics", promhttp.Handler())
 	// http.Handle("/metrics", promhttp.Handler())
-	// http.ListenAndServe(":2112", nil)
+	// http.ListenAndServe(":5000", nil)
+	fmt.Printf("/metrics starts serving\n")
 
 	// fmt.Printf("frontend starts serving\n")
 

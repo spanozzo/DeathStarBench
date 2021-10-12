@@ -8,14 +8,16 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20171214222146-0e7658f8ee99
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
-	github.com/harlow/go-micro-services v1.0.0
+	github.com/harlow/go-micro-services v0.0.0
 	github.com/hashicorp/consul v1.0.6
 	github.com/olivere/grpc v1.0.0
 	github.com/opentracing-contrib/go-stdlib v0.0.0-20180308002341-f6b9967a3c69
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/prometheus/client_golang v1.11.0
+	github.com/soheilhy/cmux v0.1.5
 	github.com/uber/jaeger-client-go v2.11.2+incompatible
-	golang.org/x/net v0.0.0-20200625001655-4c5254603344
+	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/grpc v1.10.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
@@ -35,9 +37,9 @@ require (
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/uber/jaeger-lib v1.4.0 // indirect
 	golang.org/x/sys v0.0.0-20210603081109-ebe580a85c40 // indirect
-	golang.org/x/text v0.3.2 // indirect
+	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/genproto v0.0.0-20180306020942-df60624c1e9b // indirect
 	google.golang.org/protobuf v1.26.0-rc.1 // indirect
 )
 
-replace github.com/harlow/go-micro-services v1.0.0 => /home/stefano/Documents/github/DeathStarBench/hotelReservation
+replace github.com/harlow/go-micro-services v0.0.0 => /home/stefano/Documents/github/DeathStarBench/hotelReservation

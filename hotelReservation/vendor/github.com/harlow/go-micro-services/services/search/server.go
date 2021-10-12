@@ -5,7 +5,7 @@ import (
 	"fmt"
 	// F"io/ioutil"
 	"log"
-	"net"
+
 	// "os"
 	"time"
 
@@ -13,14 +13,22 @@ import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/harlow/go-micro-services/dialer"
 	"github.com/harlow/go-micro-services/registry"
-	"github.com/harlow/go-micro-services/tls"
 	geo "github.com/harlow/go-micro-services/services/geo/proto"
 	rate "github.com/harlow/go-micro-services/services/rate/proto"
 	pb "github.com/harlow/go-micro-services/services/search/proto"
+	"github.com/harlow/go-micro-services/tls"
 	opentracing "github.com/opentracing/opentracing-go"
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
+
+	"net"
+
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/soheilhy/cmux"
+	"golang.org/x/sync/errgroup"
 )
 
 const name = "srv-search"
@@ -32,9 +40,9 @@ type Server struct {
 
 	Tracer   opentracing.Tracer
 	Port     int
-	IpAddr	 string
+	IpAddr   string
 	Registry *registry.Client
-	uuid       string
+	uuid     string
 }
 
 // Run starts the server
@@ -42,6 +50,29 @@ func (s *Server) Run() error {
 	if s.Port == 0 {
 		return fmt.Errorf("server port must be set")
 	}
+
+	// PROVA
+
+	// Create the listener
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	// Create a new cmux instance
+	m := cmux.New(l)
+
+	// Create a grpc listener first
+	grpcListener := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+
+	// All the rest is assumed to be HTTP
+	httpListener := m.Match(cmux.Any())
+
+	// Create the servers
+	// srv := grpc.NewServer()
+	httpServer := &http.Server{}
+	http.Handle("/metrics", promhttp.Handler())
+	//
 
 	s.uuid = uuid.New().String()
 
@@ -72,10 +103,12 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
+	// PROVA
+	// lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
+	// if err != nil {
+	// 	log.Fatalf("failed to listen: %v", err)
+	// }
+	///
 
 	// register with consul
 	// jsonFile, err := os.Open("config.json")
@@ -95,7 +128,33 @@ func (s *Server) Run() error {
 		return fmt.Errorf("failed register: %v", err)
 	}
 
-	return srv.Serve(lis)
+	// http.Handle("/metrics", promhttp.Handler())
+	// return http.ListenAndServe(":8082", nil)
+	fmt.Printf("/metrics starts serving at :8082 - PROVA\n")
+
+	// PROVA
+
+	// Use an error group to start all of them
+	g := errgroup.Group{}
+	g.Go(func() error {
+		return srv.Serve(grpcListener)
+	})
+	g.Go(func() error {
+		return httpServer.Serve(httpListener)
+	})
+	g.Go(func() error {
+		return m.Serve()
+	})
+
+	// Wait for them and check for errors
+	err = g.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
+	///
+	// PROVA return srv.Serve(lis)
 }
 
 // Shutdown cleans up any processes
