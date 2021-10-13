@@ -3,39 +3,47 @@ package profile
 import (
 	"encoding/json"
 	"fmt"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
 	// "io/ioutil"
 	"log"
 	"net"
+
 	// "os"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/harlow/go-micro-services/registry"
-	"github.com/harlow/go-micro-services/tls"
 	pb "github.com/harlow/go-micro-services/services/profile/proto"
+	"github.com/harlow/go-micro-services/tls"
 	"github.com/opentracing/opentracing-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 
 	"github.com/bradfitz/gomemcache/memcache"
-	// "strings"
+
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/soheilhy/cmux"
+	"golang.org/x/sync/errgroup"
 )
 
 const name = "srv-profile"
 
 // Server implements the profile service
 type Server struct {
-	Tracer   opentracing.Tracer
-	uuid     string
-	Port     int
-	IpAddr	 string
-	MongoSession	*mgo.Session
-	Registry *registry.Client
-	MemcClient *memcache.Client
+	Tracer       opentracing.Tracer
+	uuid         string
+	Port         int
+	IpAddr       string
+	MongoSession *mgo.Session
+	Registry     *registry.Client
+	MemcClient   *memcache.Client
 }
 
 // Run starts the server
@@ -43,8 +51,6 @@ func (s *Server) Run() error {
 	if s.Port == 0 {
 		return fmt.Errorf("server port must be set")
 	}
-
-	s.uuid = uuid.New().String()
 
 	// fmt.Printf("in run s.IpAddr = %s, port = %d\n", s.IpAddr, s.Port)
 
@@ -64,14 +70,32 @@ func (s *Server) Run() error {
 		opts = append(opts, tlsopt)
 	}
 
-	srv := grpc.NewServer(opts...)
+	s.uuid = uuid.New().String()
 
-	pb.RegisterProfileServer(srv, s)
+	// PROVA
 
+	// Create the listener
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
+	// Create a new cmux instance
+	m := cmux.New(lis)
+
+	// Create a grpc listener first
+	grpcListener := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+
+	// All the rest is assumed to be HTTP
+	httpListener := m.Match(cmux.Any())
+
+	// Create the servers
+	srv := grpc.NewServer(opts...)
+	httpServer := &http.Server{}
+	http.Handle("/metrics", promhttp.Handler())
+	//
+
+	pb.RegisterProfileServer(srv, s)
 
 	// register the service
 	// jsonFile, err := os.Open("config.json")
@@ -91,7 +115,28 @@ func (s *Server) Run() error {
 		return fmt.Errorf("failed register: %v", err)
 	}
 
-	return srv.Serve(lis)
+	// PROVA
+
+	// Use an error group to start all of them
+	g := errgroup.Group{}
+	g.Go(func() error {
+		return srv.Serve(grpcListener)
+	})
+	g.Go(func() error {
+		return httpServer.Serve(httpListener)
+	})
+	g.Go(func() error {
+		return m.Serve()
+	})
+
+	// Wait for them and check for errors
+	err = g.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
+	///
 }
 
 // Shutdown cleans up any processes

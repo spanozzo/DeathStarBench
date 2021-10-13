@@ -3,11 +3,14 @@ package geo
 import (
 	// "encoding/json"
 	"fmt"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
 	// "io/ioutil"
 	"log"
 	"net"
+
 	// "os"
 	"time"
 
@@ -15,12 +18,18 @@ import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/hailocab/go-geoindex"
 	"github.com/harlow/go-micro-services/registry"
-	"github.com/harlow/go-micro-services/tls"
 	pb "github.com/harlow/go-micro-services/services/geo/proto"
+	"github.com/harlow/go-micro-services/tls"
 	opentracing "github.com/opentracing/opentracing-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
+
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/soheilhy/cmux"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -34,11 +43,11 @@ type Server struct {
 	index *geoindex.ClusteringIndex
 	uuid  string
 
-	Registry *registry.Client
-	Tracer   opentracing.Tracer
-	Port     int
-	IpAddr	 string
-	MongoSession 	*mgo.Session
+	Registry     *registry.Client
+	Tracer       opentracing.Tracer
+	Port         int
+	IpAddr       string
+	MongoSession *mgo.Session
 }
 
 // Run starts the server
@@ -50,14 +59,6 @@ func (s *Server) Run() error {
 	if s.index == nil {
 		s.index = newGeoIndex(s.MongoSession)
 	}
-
-	s.uuid = uuid.New().String()
-
-	// opts := []grpc.ServerOption {
-	// 	grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
-	// 		PermitWithoutStream: true,
-	// 	}),
-	// }
 
 	opts := []grpc.ServerOption{
 		grpc.KeepaliveParams(keepalive.ServerParameters{
@@ -75,15 +76,32 @@ func (s *Server) Run() error {
 		opts = append(opts, tlsopt)
 	}
 
-	srv := grpc.NewServer(opts...)
+	s.uuid = uuid.New().String()
 
-	pb.RegisterGeoServer(srv, s)
+	// PROVA
 
-	// listener
+	// Create the listener
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
 	if err != nil {
-		return fmt.Errorf("failed to listen: %v", err)
+		log.Fatalf("failed to listen: %v", err)
 	}
+
+	// Create a new cmux instance
+	m := cmux.New(lis)
+
+	// Create a grpc listener first
+	grpcListener := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+
+	// All the rest is assumed to be HTTP
+	httpListener := m.Match(cmux.Any())
+
+	// Create the servers
+	srv := grpc.NewServer(opts...)
+	httpServer := &http.Server{}
+	http.Handle("/metrics", promhttp.Handler())
+	//
+
+	pb.RegisterGeoServer(srv, s)
 
 	// register the service
 	// jsonFile, err := os.Open("config.json")
@@ -105,7 +123,28 @@ func (s *Server) Run() error {
 		return fmt.Errorf("failed register: %v", err)
 	}
 
-	return srv.Serve(lis)
+	// PROVA
+
+	// Use an error group to start all of them
+	g := errgroup.Group{}
+	g.Go(func() error {
+		return srv.Serve(grpcListener)
+	})
+	g.Go(func() error {
+		return httpServer.Serve(httpListener)
+	})
+	g.Go(func() error {
+		return m.Serve()
+	})
+
+	// Wait for them and check for errors
+	err = g.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
+	///
 }
 
 // Shutdown cleans up any processes

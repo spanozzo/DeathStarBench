@@ -51,31 +51,6 @@ func (s *Server) Run() error {
 		return fmt.Errorf("server port must be set")
 	}
 
-	// PROVA
-
-	// Create the listener
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	// Create a new cmux instance
-	m := cmux.New(l)
-
-	// Create a grpc listener first
-	grpcListener := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
-
-	// All the rest is assumed to be HTTP
-	httpListener := m.Match(cmux.Any())
-
-	// Create the servers
-	// srv := grpc.NewServer()
-	httpServer := &http.Server{}
-	http.Handle("/metrics", promhttp.Handler())
-	//
-
-	s.uuid = uuid.New().String()
-
 	opts := []grpc.ServerOption{
 		grpc.KeepaliveParams(keepalive.ServerParameters{
 			Timeout: 120 * time.Second,
@@ -92,7 +67,31 @@ func (s *Server) Run() error {
 		opts = append(opts, tlsopt)
 	}
 
+	s.uuid = uuid.New().String()
+
+	// PROVA
+
+	// Create the listener
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	// Create a new cmux instance
+	m := cmux.New(lis)
+
+	// Create a grpc listener first
+	grpcListener := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+
+	// All the rest is assumed to be HTTP
+	httpListener := m.Match(cmux.Any())
+
+	// Create the servers
 	srv := grpc.NewServer(opts...)
+	httpServer := &http.Server{}
+	http.Handle("/metrics", promhttp.Handler())
+	///
+
 	pb.RegisterSearchServer(srv, s)
 
 	// init grpc clients
@@ -102,13 +101,6 @@ func (s *Server) Run() error {
 	if err := s.initRateClient("srv-rate"); err != nil {
 		return err
 	}
-
-	// PROVA
-	// lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
-	// if err != nil {
-	// 	log.Fatalf("failed to listen: %v", err)
-	// }
-	///
 
 	// register with consul
 	// jsonFile, err := os.Open("config.json")
@@ -127,10 +119,6 @@ func (s *Server) Run() error {
 	if err != nil {
 		return fmt.Errorf("failed register: %v", err)
 	}
-
-	// http.Handle("/metrics", promhttp.Handler())
-	// return http.ListenAndServe(":8082", nil)
-	fmt.Printf("/metrics starts serving at :8082 - PROVA\n")
 
 	// PROVA
 
@@ -154,7 +142,6 @@ func (s *Server) Run() error {
 
 	return err
 	///
-	// PROVA return srv.Serve(lis)
 }
 
 // Shutdown cleans up any processes

@@ -3,11 +3,14 @@ package rate
 import (
 	"encoding/json"
 	"fmt"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
 	// "io/ioutil"
 	"log"
 	"net"
+
 	// "os"
 	"sort"
 	"time"
@@ -15,28 +18,35 @@ import (
 	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/harlow/go-micro-services/registry"
-	"github.com/harlow/go-micro-services/tls"
 	pb "github.com/harlow/go-micro-services/services/rate/proto"
+	"github.com/harlow/go-micro-services/tls"
 	"github.com/opentracing/opentracing-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 
-	"github.com/bradfitz/gomemcache/memcache"
 	"strings"
+
+	"github.com/bradfitz/gomemcache/memcache"
+
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/soheilhy/cmux"
+	"golang.org/x/sync/errgroup"
 )
 
 const name = "srv-rate"
 
 // Server implements the rate service
 type Server struct {
-	Tracer    opentracing.Tracer
-	Port      int
-	IpAddr	 string
-	MongoSession 	*mgo.Session
-	Registry  *registry.Client
-	MemcClient *memcache.Client
-	uuid       string
+	Tracer       opentracing.Tracer
+	Port         int
+	IpAddr       string
+	MongoSession *mgo.Session
+	Registry     *registry.Client
+	MemcClient   *memcache.Client
+	uuid         string
 }
 
 // Run starts the server
@@ -63,14 +73,30 @@ func (s *Server) Run() error {
 		opts = append(opts, tlsopt)
 	}
 
-	srv := grpc.NewServer(opts...)
+	// PROVA
 
-	pb.RegisterRateServer(srv, s)
-
+	// Create the listener
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
+	// Create a new cmux instance
+	m := cmux.New(lis)
+
+	// Create a grpc listener first
+	grpcListener := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+
+	// All the rest is assumed to be HTTP
+	httpListener := m.Match(cmux.Any())
+
+	// Create the servers
+	srv := grpc.NewServer(opts...)
+	httpServer := &http.Server{}
+	http.Handle("/metrics", promhttp.Handler())
+	///
+
+	pb.RegisterRateServer(srv, s)
 
 	// register the service
 	// jsonFile, err := os.Open("config.json")
@@ -89,8 +115,28 @@ func (s *Server) Run() error {
 	if err != nil {
 		return fmt.Errorf("failed register: %v", err)
 	}
+	// PROVA
 
-	return srv.Serve(lis)
+	// Use an error group to start all of them
+	g := errgroup.Group{}
+	g.Go(func() error {
+		return srv.Serve(grpcListener)
+	})
+	g.Go(func() error {
+		return httpServer.Serve(httpListener)
+	})
+	g.Go(func() error {
+		return m.Serve()
+	})
+
+	// Wait for them and check for errors
+	err = g.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
+	///
 }
 
 // Shutdown cleans up any processes
@@ -144,7 +190,7 @@ func (s *Server) GetRates(ctx context.Context, req *pb.Request) (*pb.Result, err
 			} else {
 				for _, r := range tmpRatePlans {
 					ratePlans = append(ratePlans, r)
-					rate_json , err := json.Marshal(r)
+					rate_json, err := json.Marshal(r)
 					if err != nil {
 						fmt.Printf("json.Marshal err = %s\n", err)
 					}

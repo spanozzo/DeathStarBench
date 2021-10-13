@@ -4,22 +4,31 @@ import (
 	"crypto/sha256"
 	// "encoding/json"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/harlow/go-micro-services/registry"
-	"github.com/harlow/go-micro-services/tls"
 	pb "github.com/harlow/go-micro-services/services/user/proto"
+	"github.com/harlow/go-micro-services/tls"
 	"github.com/opentracing/opentracing-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
 	// "io/ioutil"
 	"log"
 	"net"
+
 	// "os"
 	"time"
+
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/soheilhy/cmux"
+	"golang.org/x/sync/errgroup"
 )
 
 const name = "srv-user"
@@ -28,12 +37,12 @@ const name = "srv-user"
 type Server struct {
 	users map[string]string
 
-	Tracer   opentracing.Tracer
-	Registry *registry.Client
-	Port     int
-	IpAddr	 string
-	MongoSession 	*mgo.Session
-	uuid     string
+	Tracer       opentracing.Tracer
+	Registry     *registry.Client
+	Port         int
+	IpAddr       string
+	MongoSession *mgo.Session
+	uuid         string
 }
 
 // Run starts the server
@@ -64,14 +73,30 @@ func (s *Server) Run() error {
 		opts = append(opts, tlsopt)
 	}
 
-	srv := grpc.NewServer(opts...)
+	// PROVA
 
-	pb.RegisterUserServer(srv, s)
-
+	// Create the listener
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
+	// Create a new cmux instance
+	m := cmux.New(lis)
+
+	// Create a grpc listener first
+	grpcListener := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+
+	// All the rest is assumed to be HTTP
+	httpListener := m.Match(cmux.Any())
+
+	// Create the servers
+	srv := grpc.NewServer(opts...)
+	httpServer := &http.Server{}
+	http.Handle("/metrics", promhttp.Handler())
+	///
+
+	pb.RegisterUserServer(srv, s)
 
 	// // register the service
 	// jsonFile, err := os.Open("config.json")
@@ -91,7 +116,28 @@ func (s *Server) Run() error {
 		return fmt.Errorf("failed register: %v", err)
 	}
 
-	return srv.Serve(lis)
+	// PROVA
+
+	// Use an error group to start all of them
+	g := errgroup.Group{}
+	g.Go(func() error {
+		return srv.Serve(grpcListener)
+	})
+	g.Go(func() error {
+		return httpServer.Serve(httpListener)
+	})
+	g.Go(func() error {
+		return m.Serve()
+	})
+
+	// Wait for them and check for errors
+	err = g.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
+	///
 }
 
 // Shutdown cleans up any processes
@@ -123,9 +169,9 @@ func (s *Server) CheckUser(ctx context.Context, req *pb.Request) (*pb.Result, er
 	// }
 	res.Correct = false
 	if true_pass, found := s.users[req.Username]; found {
-	    res.Correct = pass == true_pass
+		res.Correct = pass == true_pass
 	}
-	
+
 	// res.Correct = user.Password == pass
 
 	// fmt.Printf("CheckUser %d\n", res.Correct)
