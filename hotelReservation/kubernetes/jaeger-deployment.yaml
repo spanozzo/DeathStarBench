@@ -43,7 +43,9 @@ spec:
             - containerPort: 6832
               protocol: UDP
           resources:
-            limits:
+            requests:
               cpu: 100m
+            limits:
+              cpu: 500m
       restartPolicy: Always
 status: {}

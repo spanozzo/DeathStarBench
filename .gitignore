@@ -7,3 +7,7 @@ hotelReservation/wrk2/result.csv
 hotelReservation/wrk2/result.txt
 
 hotelReservation/kubernetes/scripts/build-docker-images.sh
+
+hotelReservation/wrk2/install in alpine image
+
+hotelReservation/wrk2/Dockerfile

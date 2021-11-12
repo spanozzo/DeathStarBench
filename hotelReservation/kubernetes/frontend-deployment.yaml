@@ -32,10 +32,17 @@ spec:
             - frontend
           image: panuc1/hotel_reserv_frontend_single_node
           name: hotel-reserv-frontend
+          env: 
+            - name: GOGC
+              value: "0"
+            - name: GOMAXPROCS
+              value: "20"
           ports:
             - containerPort: 5000
           resources:
+            requests:
+              cpu: 300m
             limits:
-              cpu: 1000m
+              cpu: 800m
       restartPolicy: Always
 status: {}
