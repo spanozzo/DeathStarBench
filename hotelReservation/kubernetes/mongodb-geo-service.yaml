@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: mongodb-geo
   name: mongodb-geo
+  namespace: hotel-res
 spec:
   ports:
     - name: "mongodb-geo"

@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: frontend
   name: frontend
+  namespace: hotel-res
 spec:
   ports:
     - name: "5000"

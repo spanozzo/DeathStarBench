@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: mongodb-rate
   name: mongodb-rate
+  namespace: hotel-res
 spec:
   replicas: 1
   selector:

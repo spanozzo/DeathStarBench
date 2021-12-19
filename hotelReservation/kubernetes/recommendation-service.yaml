@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: recommendation
   name: recommendation
+  namespace: hotel-res
 spec:
   ports:
     - name: "8085"

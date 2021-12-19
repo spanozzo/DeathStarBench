@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: jaeger
   name: jaeger
+  namespace: hotel-res
 spec:
   ports:
     - name: "14269"

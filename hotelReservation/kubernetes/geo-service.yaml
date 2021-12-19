@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: geo
   name: geo
+  namespace: hotel-res
 spec:
   ports:
     - name: "8083"

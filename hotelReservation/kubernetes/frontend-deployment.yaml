@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: frontend
   name: frontend
+  namespace: hotel-res
 spec:
   replicas: 1
   selector:
@@ -34,9 +35,9 @@ spec:
           name: hotel-reserv-frontend
           env: 
             - name: GOGC
-              value: "0"
+              value: "100"
             - name: GOMAXPROCS
-              value: "20"
+              value: "4"
           ports:
             - containerPort: 5000
           resources:

@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: mongodb-reservation
   name: mongodb-reservation
+  namespace: hotel-res
 spec:
   replicas: 1
   selector:
@@ -37,7 +38,7 @@ spec:
             requests:
               cpu: 100m
             limits:
-              cpu: 350m
+              cpu: 600m
           volumeMounts:
             - mountPath: /data/db
               name: reservation
