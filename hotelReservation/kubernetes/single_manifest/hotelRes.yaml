@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: hotel-res
+  labels:
+    istio-injection: enabled
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -43,8 +45,10 @@ spec:
             - containerPort: 53
               protocol: UDP
           resources:
+            requests: 
+              cpu: 10m
             limits:
-              cpu: 1000m
+              cpu: 500m
       restartPolicy: Always
 status: {}
 ---
@@ -95,7 +99,8 @@ spec:
               protocol: UDP
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
+              memory: 64Mi
             limits:
               cpu: 200m
               memory: 3Gi
@@ -141,7 +146,7 @@ spec:
             - containerPort: 5000
           resources:
             requests:
-              cpu: 300m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -191,7 +196,7 @@ spec:
             - containerPort: 8083
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -241,7 +246,7 @@ spec:
             - containerPort: 8081
           resources:
             requests:
-              cpu: 200m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -291,7 +296,7 @@ spec:
             - containerPort: 8084
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -341,7 +346,7 @@ spec:
             - containerPort: 8085
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -391,7 +396,7 @@ spec:
             - containerPort: 8087
           resources:
             requests:
-              cpu: 200m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -441,7 +446,7 @@ spec:
             - containerPort: 8082
           resources:
             requests:
-              cpu: 200m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -491,7 +496,7 @@ spec:
             - containerPort: 8086
           resources:
             requests:
-              cpu: 20m
+              cpu: 10m
             limits:
               cpu: 1000m
           env:
@@ -544,7 +549,7 @@ spec:
             - containerPort: 11211
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
             limits:
               cpu: 1000m
       restartPolicy: Always
@@ -592,7 +597,7 @@ spec:
             - containerPort: 11211
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
             limits:
               cpu: 1000m
       restartPolicy: Always
@@ -640,7 +645,7 @@ spec:
             - containerPort: 11211
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
             limits:
               cpu: 1000m
       restartPolicy: Always
@@ -684,7 +689,7 @@ spec:
             - containerPort: 27017
           resources:
             requests:
-              cpu: 20m
+              cpu: 10m
             limits:
               cpu: 1000m
           volumeMounts:
@@ -735,7 +740,7 @@ spec:
             - containerPort: 27017
           resources:
             requests:
-              cpu: 20m
+              cpu: 10m
             limits:
               cpu: 1000m
           volumeMounts:
@@ -787,7 +792,7 @@ spec:
             - containerPort: 27017
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
             limits:
               cpu: 1000m
           volumeMounts:
@@ -838,7 +843,7 @@ spec:
             - containerPort: 27017
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
             limits:
               cpu: 1000m
           volumeMounts:
@@ -890,7 +895,7 @@ spec:
             - containerPort: 27017
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
             limits:
               cpu: 2000m
           volumeMounts:
@@ -942,7 +947,7 @@ spec:
             - containerPort: 27017
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
             limits:
               cpu: 1000m
           volumeMounts:

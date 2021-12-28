@@ -1,0 +1,238 @@
+alertmanager:
+  enabled: false
+prometheusOperator:
+  nodeSelector:
+    node: ak-panozzo-utils
+prometheus:
+  service: 
+    type: NodePort
+  prometheusSpec:
+    scrapeInterval: "15s"
+    nodeSelector:
+      node: ak-panozzo-utils
+    additionalScrapeConfigs:
+      - job_name: 'go_metrics'
+        kubernetes_sd_configs:
+          - role: service
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace]
+          regex: 'hotel-res'
+          action: keep
+        - source_labels: [__address__]
+          regex: 'frontend.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: frontend
+        - source_labels: [__address__]
+          regex: 'geo.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: geo
+        - source_labels: [__address__]
+          regex: 'user.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: user
+        - source_labels: [__address__]
+          regex: 'profile.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: profile
+        - source_labels: [__address__]
+          regex: 'rate.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: rate
+        - source_labels: [__address__]
+          regex: 'recommendation.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: recommendation
+        - source_labels: [__address__]
+          regex: 'reservation.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: reservation
+        - source_labels: [__address__]
+          regex: 'search.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: search
+        # new relabel
+        - source_labels: [__address__]
+          regex: 'memcached-rate.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: memcached-rate
+        - source_labels: [__address__]
+          regex: 'memcached-profile.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: memcached-profile
+        - source_labels: [__address__]
+          regex: 'memcached-reserve.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: memcached-reserve
+        - source_labels: [__address__]
+          regex: 'mongodb-recommendation.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: mongodb-recommendation
+        - source_labels: [__address__]
+          regex: 'mongodb-reservation.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: mongodb-reservation
+        - source_labels: [__address__]
+          regex: 'mongodb-rate.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: mongodb-rate
+        - source_labels: [__address__]
+          regex: 'mongodb-user.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: mongodb-user
+        - source_labels: [__address__]
+          regex: 'mongodb-profile.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: mongodb-profile
+        - source_labels: [__address__]
+          regex: 'mongodb-geo.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: mongodb-geo
+        - source_labels: [__address__]
+          regex: 'jaeger.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: jaeger
+        - source_labels: [__address__]
+          regex: 'consul.*' #'.*\..*\..*'
+          target_label: instance
+          replacement: consul
+      # scraper persistent volumes metrics
+      - job_name: 'kubernetes-nodes'
+        kubernetes_sd_configs:
+          - role: node
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics
+      - job_name: 'istiod'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - istio-system
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: istiod;http-monitoring
+      - job_name: 'envoy-stats'
+        metrics_path: /stats/prometheus
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            action: keep
+            regex: '.*-envoy-prom'
+          #- source_labels: [__meta_kubernetes_namespace]
+            #regex: 'hotel-res'
+            #target_label: instance
+            #replacement: [__meta_kubernetes_pod_label_io_kompose_service]
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: ''
+            target_label: instance
+            replacement: mongodb-profile
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'frontend.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: frontend
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'geo.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: geo
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'user.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: user
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'profile.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: profile
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'rate.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: rate
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'recommendation.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: recommendation
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'reservation.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: reservation
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'search.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: search
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'memcached-rate.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: memcached-rate
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'memcached-profile.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: memcached-profile
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'memcached-reserve.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: memcached-reserve
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'mongodb-recommendation.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: mongodb-recommendation
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'mongodb-reservation.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: mongodb-reservation
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'mongodb-rate.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: mongodb-rate
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'mongodb-user.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: mongodb-user
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'mongodb-profile.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: mongodb-profile
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'mongodb-geo.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: mongodb-geo
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'jaeger.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: jaeger
+          - source_labels: [__meta_kubernetes_pod_label_io_kompose_service]
+            regex: 'consul.*' #'.*\..*\..*'
+            target_label: instance
+            replacement: consul
+      #- job_name: 'kubernetes-cadvisor'
+        #scheme: https
+        #metrics_path: /metrics/cadvisor
+        #tls_config:
+          #ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        #bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        #kubernetes_sd_configs:
+        #- role: node
+        #relabel_configs:
+        #- action: labelmap
+          #regex: __meta_kubernetes_node_label_(.+)
+kube-state-metrics:
+  nodeSelector:
+    node: ak-panozzo-utils
+grafana:
+  adminPassword: admin
+  nodeSelector:
+    node: ak-panozzo-utils
+kubelet:
+  serviceMonitor:
+    cAdvisor: true
+    interval: "15s"

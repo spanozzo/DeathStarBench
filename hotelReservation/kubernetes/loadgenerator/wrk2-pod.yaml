@@ -2,17 +2,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: wrk2
+  namespace: hotel-res
 spec:
   containers:
   - name: wrk2
     image: panuc1/wrk2-ubuntu
-    resources:
-      requests:
-        cpu: 150m
-      limits:
-        cpu: 350m
     command: [ "/bin/bash", "-c", "--" ]
     args: [ "while true; do sleep 30; done;" ]
   restartPolicy: Never
   nodeSelector:
-    node: ak-utils
+    node: hotelreserv-generator
