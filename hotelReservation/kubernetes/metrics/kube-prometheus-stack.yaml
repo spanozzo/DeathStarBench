@@ -72,17 +72,9 @@ spec:
             gnetId: 7630
             revision: 68
             datasource: Prometheus
-          locust-dashboard:
-            gnetId: 11985
-            revision: 3
-            datasource: Prometheus
           node-monitoring:
             gnetId: 13077
             revision: 3
-            datasource: Prometheus
-          vpa:
-            gnetId: 14588
-            revision: 2
             datasource: Prometheus
     kube-state-metrics:
       metricLabelsAllowlist:
@@ -103,11 +95,20 @@ spec:
     #            regex: "(.*):.*"
     #            targetLabel: "instance"
     #            replacement: "akamas"
-    nodeExporter:
-      serviceMonitor:
-        relabelings:
-          - action: labelmap
-            regex: __meta_kubernetes_(.+)
+    
+    # nodeExporter:
+    #   serviceMonitor:
+    #     relabelings:
+    #       - action: labelmap
+    #         regex: __meta_kubernetes_(.+)
+            
+    # prometheus-node-exporter:
+    #   prometheus:
+    #     monitor:
+    #       metricRelabelings:
+    #       - target_label: "nome"
+    #         replacement: "prova"
+
     prometheus:
       service:
         type: NodePort

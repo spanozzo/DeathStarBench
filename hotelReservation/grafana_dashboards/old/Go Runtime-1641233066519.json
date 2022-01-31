@@ -20,115 +20,106 @@
   },
   "description": "A quickstart to setup the Prometheus Go runtime exporter with preconfigured dashboards, alerting rules, and recording rules.",
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": 14061,
   "graphTooltip": 0,
-  "id": 26,
-  "iteration": 1638963208101,
+  "id": 32,
+  "iteration": 1641206707583,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$datasource",
-      "description": "Average total bytes of memory reserved across all process instances of a job.",
       "fieldConfig": {
         "defaults": {
-          "links": []
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
         "y": 0
       },
-      "hiddenSeries": false,
-      "id": 16,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
+      "id": 29,
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
       },
-      "percentage": false,
-      "pluginVersion": "8.1.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "expr": "avg by(job)(go_memstats_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "go_memstats_gc_cpu_fraction{instance=~\"$instance\"}",
           "interval": "",
-          "legendFormat": "{{job}} (avg)",
+          "legendFormat": "cpu fraction",
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Total Reserved Memory",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "decbytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Panel Title",
+      "type": "timeseries"
     },
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "description": "Average stack memory usage across all instances of a job.",
       "fieldConfig": {
         "defaults": {
@@ -163,7 +154,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -180,9 +171,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Stack Memory Use",
       "tooltip": {
         "shared": true,
@@ -191,33 +180,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -225,8 +205,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
-      "description": "Average memory reservations by the runtime, not for stack or heap, across all instances of a job.",
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "description": "Average total bytes of memory reserved across all process instances of a job.",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -242,7 +224,7 @@
         "y": 8
       },
       "hiddenSeries": false,
-      "id": 26,
+      "id": 16,
       "legend": {
         "avg": false,
         "current": false,
@@ -260,7 +242,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -270,35 +252,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg by (job)(go_memstats_mspan_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
+          "expr": "avg by(job)(go_memstats_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
           "interval": "",
-          "legendFormat": "{{instance}}: mspan (avg)",
-          "refId": "B"
-        },
-        {
-          "expr": "avg by (job)(go_memstats_mcache_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
-          "interval": "",
-          "legendFormat": "{{instance}}: mcache (avg)",
-          "refId": "D"
-        },
-        {
-          "expr": "avg by (job)(go_memstats_buck_hash_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
-          "interval": "",
-          "legendFormat": "{{instance}}: buck hash (avg)",
-          "refId": "E"
-        },
-        {
-          "expr": "avg by (job)(go_memstats_gc_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
-          "interval": "",
-          "legendFormat": "{{job}}: gc (avg)",
-          "refId": "F"
+          "legendFormat": "{{job}} (avg)",
+          "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Other Memory Reservations",
+      "title": "Total Reserved Memory",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -306,33 +268,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": false
+          "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -340,7 +293,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "description": "Average memory reserved, and actually in use, by the heap, across all instances of a job.",
       "fieldConfig": {
         "defaults": {
@@ -375,7 +330,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -420,9 +375,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Heap Memory",
       "tooltip": {
         "shared": true,
@@ -431,33 +384,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -465,8 +409,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
-      "description": "Average allocation rate in bytes per second, across all instances of a job.",
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "description": "Average memory reservations by the runtime, not for stack or heap, across all instances of a job.",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -482,7 +428,7 @@
         "y": 16
       },
       "hiddenSeries": false,
-      "id": 14,
+      "id": 26,
       "legend": {
         "avg": false,
         "current": false,
@@ -500,9 +446,9 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
-      "pointradius": 1,
-      "points": true,
+      "pluginVersion": "8.3.1",
+      "pointradius": 2,
+      "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -510,17 +456,33 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg by (job)(rate(go_memstats_alloc_bytes_total{job=\"$job\", instance=~\"$instance\"}[$__rate_interval]))",
+          "expr": "avg by (job)(go_memstats_mspan_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
           "interval": "",
-          "legendFormat": "{{job}}: bytes malloced/s (avg)",
-          "refId": "A"
+          "legendFormat": "{{instance}}: mspan (avg)",
+          "refId": "B"
+        },
+        {
+          "expr": "avg by (job)(go_memstats_mcache_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
+          "interval": "",
+          "legendFormat": "{{instance}}: mcache (avg)",
+          "refId": "D"
+        },
+        {
+          "expr": "avg by (job)(go_memstats_buck_hash_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
+          "interval": "",
+          "legendFormat": "{{instance}}: buck hash (avg)",
+          "refId": "E"
+        },
+        {
+          "expr": "avg by (job)(go_memstats_gc_sys_bytes{job=\"$job\", instance=~\"$instance\"})",
+          "interval": "",
+          "legendFormat": "{{job}}: gc (avg)",
+          "refId": "F"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Allocation Rate, Bytes",
+      "title": "Other Memory Reservations",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -528,33 +490,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "Bps",
-          "label": null,
+          "format": "decbytes",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -562,7 +515,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "description": "Average rate of heap object allocation, across all instances of a job.",
       "fieldConfig": {
         "defaults": {
@@ -597,7 +552,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -614,9 +569,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Heap Object Allocation Rate",
       "tooltip": {
         "shared": true,
@@ -625,33 +578,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -659,8 +603,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
-      "description": "Average number of live memory objects across all instances of a job.",
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "description": "Average allocation rate in bytes per second, across all instances of a job.",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -676,14 +622,12 @@
         "y": 24
       },
       "hiddenSeries": false,
-      "id": 22,
+      "id": 14,
       "legend": {
-        "alignAsTable": false,
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
-        "rightSide": false,
         "show": true,
         "total": false,
         "values": false
@@ -696,9 +640,9 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
-      "pointradius": 2,
-      "points": false,
+      "pluginVersion": "8.3.1",
+      "pointradius": 1,
+      "points": true,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -706,17 +650,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg by(job)(go_memstats_mallocs_total{job=\"$job\", instance=~\"$instance\"} - go_memstats_frees_total{job=\"$job\", instance=~\"$instance\"})",
+          "expr": "avg by (job)(rate(go_memstats_alloc_bytes_total{job=\"$job\", instance=~\"$instance\"}[$__rate_interval]))",
           "interval": "",
-          "legendFormat": "{{job}}: object count (avg)",
+          "legendFormat": "{{job}}: bytes malloced/s (avg)",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Number of Live Objects",
+      "title": "Allocation Rate, Bytes",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -724,33 +666,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "format": "Bps",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -758,7 +691,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "description": "Average number of goroutines across instances of a job.",
       "fieldConfig": {
         "defaults": {
@@ -793,7 +728,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -819,9 +754,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Goroutines",
       "tooltip": {
         "shared": true,
@@ -830,9 +763,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -840,24 +771,17 @@
         {
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -865,7 +789,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "description": "Average number of live memory objects across all instances of a job.",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -881,13 +808,14 @@
         "y": 32
       },
       "hiddenSeries": false,
-      "id": 4,
+      "id": 22,
       "legend": {
         "alignAsTable": false,
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
+        "rightSide": false,
         "show": true,
         "total": false,
         "values": false
@@ -900,7 +828,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -910,23 +838,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg by (job)(go_gc_duration_seconds{quantile=\"0\", job=\"$job\", instance=~\"$instance\"})",
+          "expr": "avg by(job)(go_memstats_mallocs_total{job=\"$job\", instance=~\"$instance\"} - go_memstats_frees_total{job=\"$job\", instance=~\"$instance\"})",
           "interval": "",
-          "legendFormat": "{{job}}: min gc time (avg)",
+          "legendFormat": "{{job}}: object count (avg)",
           "refId": "A"
-        },
-        {
-          "expr": "avg by (job)(go_gc_duration_seconds{quantile=\"1\", job=\"$job\", instance=~\"$instance\"})",
-          "interval": "",
-          "legendFormat": "{{job}}: max gc time (avg)",
-          "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "GC min & max duration",
+      "title": "Number of Live Objects",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -934,33 +854,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "ms",
-          "label": null,
+          "format": "short",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -968,7 +879,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "description": "The number used bytes at which the runtime plans to perform the next GC, averaged across all instances of a job.",
       "fieldConfig": {
         "defaults": {
@@ -1003,7 +916,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1020,9 +933,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Next GC, Bytes",
       "tooltip": {
         "shared": true,
@@ -1031,38 +942,123 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "s",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.3.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg by (job)(go_gc_duration_seconds{quantile=\"0\", job=\"$job\", instance=~\"$instance\"})",
+          "interval": "",
+          "legendFormat": "{{job}}: min gc time (avg)",
+          "refId": "A"
+        },
+        {
+          "expr": "avg by (job)(go_gc_duration_seconds{quantile=\"1\", job=\"$job\", instance=~\"$instance\"})",
+          "interval": "",
+          "legendFormat": "{{job}}: max gc time (avg)",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "GC min & max duration",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
       }
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 30,
+  "schemaVersion": 33,
   "style": "dark",
   "tags": [
     "go",
@@ -1076,11 +1072,8 @@
           "text": "Prometheus",
           "value": "Prometheus"
         },
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "datasource",
         "options": [],
@@ -1092,16 +1085,15 @@
         "type": "datasource"
       },
       {
-        "allValue": null,
         "current": {
           "selected": false,
           "text": "go_metrics",
           "value": "go_metrics"
         },
-        "datasource": "$datasource",
+        "datasource": {
+          "uid": "$datasource"
+        },
         "definition": "label_values(go_info, job)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "job",
@@ -1132,10 +1124,7 @@
             "frontend"
           ]
         },
-        "datasource": "$datasource",
         "definition": "label_values(go_info{job=\"$job\"}, instance)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "instance",
@@ -1144,7 +1133,7 @@
         "options": [],
         "query": {
           "query": "label_values(go_info{job=\"$job\"}, instance)",
-          "refId": "Prometheus-instance-Variable-Query"
+          "refId": "StandardVariableQuery"
         },
         "refresh": 2,
         "regex": "",
@@ -1158,7 +1147,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {
@@ -1188,5 +1177,6 @@
   "timezone": "",
   "title": "Go Runtime",
   "uid": "CgCw8jKZz3",
-  "version": 3
+  "version": 2,
+  "weekStart": ""
 }

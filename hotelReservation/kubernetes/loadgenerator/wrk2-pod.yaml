@@ -4,11 +4,11 @@ metadata:
   name: wrk2
   namespace: hotel-res
 spec:
+  nodeSelector:
+    node: hotelreserv-generator
   containers:
   - name: wrk2
     image: panuc1/wrk2-ubuntu
     command: [ "/bin/bash", "-c", "--" ]
     args: [ "while true; do sleep 30; done;" ]
-  restartPolicy: Never
-  nodeSelector:
-    node: hotelreserv-generator
+  restartPolicy: Always

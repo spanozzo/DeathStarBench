@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wrk2
+  namespace: hotel-res
+  labels: 
+    app: wrk2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wrk2
+  template:
+    metadata:
+      labels: 
+        app: wrk2
+    spec:
+      nodeSelector:
+        node: hotelreserv-generator
+      containers:
+      - name: wrk2
+        image: panuc1/wrk2-ubuntu
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 30; done;" ]
+      restartPolicy: Always 
